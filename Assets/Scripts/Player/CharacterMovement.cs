@@ -82,12 +82,19 @@ public class CharacterMovement : MonoBehaviour {
     {
         // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
 
-        grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
-        anim.SetBool("Ground", grounded);
-        if (grounded)
-        {
-            doubleJump = false;
+        if (groundCheck) { 
+            grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
+            
+           
+            anim.SetBool("Ground", grounded);
+            if (grounded)
+            {
+                doubleJump = false;
+            }
         }
+
     }
 
- }
+    
+
+}

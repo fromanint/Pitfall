@@ -45,7 +45,7 @@ public class Rope : MonoBehaviour {
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"),false);
             other.gameObject.GetComponent<PlayerControl>().climb = false;
             other.gameObject.GetComponent<Rigidbody2D>().gravityScale = gravity;
-            Debug.Log(gravity);
+       
         }      
 
     }

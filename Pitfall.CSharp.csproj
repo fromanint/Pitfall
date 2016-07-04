@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Player\CharacterMovement.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerControl.cs" />
     <Compile Include="Assets\Scripts\UI\LifesManager.cs" />
+    <Compile Include="Assets\Scripts\UI\Score.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
