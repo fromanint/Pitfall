@@ -18,7 +18,7 @@ public class PlayerControl : MonoBehaviour {
     [HideInInspector] public bool isAttach;
 
 
-    [SerializeField]float dieDelay;
+    [SerializeField]float dieDelay; //this variable controls all delays we need in courotines at first it was only die.
 
     CharacterMovement CM;
     Animator Anim;
@@ -42,23 +42,29 @@ public class PlayerControl : MonoBehaviour {
         CM = GetComponent<CharacterMovement>();  //Controls the movement of the player
         Anim = GetComponent<Animator>(); //Controls the animation of dead
         LM = FindObjectOfType(typeof(LifesManager)) as LifesManager; //controls the lifes in the UI.
-        GetComponent<Rigidbody2D>().gravityScale = gravity;
+        GetComponent<Rigidbody2D>().gravityScale = gravity; //Set the gravity of the player so we can reset it when we need to
     }
 	
 	// Update is called once per frame
 	void Update () {
+        //Check if player is attach to a rope if its attach wait until player hit "space"  to detach 
         if (!isAttach)
         {
+            
             float x = Input.GetAxis("Horizontal");
             jump = Input.GetKeyDown("space");
+            //Check if the player is climbing a stairs if not player can move arround with the keyboard arrows
             if (!climb)
             {
+                Anim.SetBool("Climb", false);
+                Anim.SetFloat("Speed", Mathf.Abs(x));
                 CM.Move(x, jump);
             }
             else
             {
+                //if its climbing player will move in vertical 
                 float y = Input.GetAxis("Vertical");
-                if (jump)
+                if (jump)//if player hits jump he will no be climbing anymore so he can fall.
                 {
                     climb = false;
                     GetComponent<Rigidbody2D>().gravityScale = gravity;
@@ -78,11 +84,11 @@ public class PlayerControl : MonoBehaviour {
     }
     IEnumerator Detach() {
         // Detaches the transform from its parent.
-        
-        Transform parent = transform.parent;
+        //we need to know who the parent is so we can reset the layer and make him collide with the player again after few seconds
+        Transform parent = transform.parent; 
         GetComponent<Rigidbody2D>().gravityScale = gravity;
         transform.rotation = Quaternion.identity;
-        transform.parent = null;
+        transform.parent = null; 
         isAttach = false;
         Anim.SetBool("Climb", false);
 
@@ -92,6 +98,7 @@ public class PlayerControl : MonoBehaviour {
         
     }
 
+    //whis function will manage the life of the player, and we will know if the player is dead if yes then reset player 
     public void ManageLife(float damage, bool kill)
     {
         //Verify that player is not dead
@@ -132,7 +139,7 @@ public class PlayerControl : MonoBehaviour {
             //if player's last life reset the scene and the ignored layers
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"), false);
             lifes--;
-            if (lifes <0)
+            if (lifes <= 0)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }

@@ -33,9 +33,10 @@ public class CameraMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Check if the player and the start position at screen are in the scen
         if (Player && StartPos)
         {
-          
+          //check if the player has hit the back edge of the screen if yes change to previous screen
             if (Player.transform.position.x <= edgeBack)
             {
             
@@ -52,6 +53,7 @@ public class CameraMove : MonoBehaviour
                     ChangeScreen((no_screen - 1) * offset);
                 }
             }
+            //check if the player has hit the front edge of the screen if yes change to next screen
             if (Player.transform.position.x >= edgeFront)
             {
                 Debug.Log("Player>=edgeFront");
@@ -71,7 +73,7 @@ public class CameraMove : MonoBehaviour
         }
         else { enabled = false; }
     }
-
+    //Change the screen when the player hit the edge
     void ChangeScreen(float distance)
     {
         Vector3 newpos = new Vector3(distance, transform.position.y, transform.position.z);

@@ -30,6 +30,9 @@ public class LandMines : MonoBehaviour {
 
     IEnumerator Change()
     {
+        //Every change_time seconds we will change the status 
+        //if the player toches and the state is !kill then don't do anything
+        //if the player toches and the state is kill, well kill him!!!
         yield return new WaitForSeconds(change_time);
         if (!EC.kill)
         {
@@ -64,6 +67,8 @@ public class LandMines : MonoBehaviour {
     void OnTriggerStay2D(Collider2D other)
     {
         
+        //while the player is in the mine check if the status change to kill if it has then kill player if not
+        //let player pass.
         if(other.gameObject.tag == "Player")
         { pressed = true;
             if(EC.kill)
@@ -80,6 +85,7 @@ public class LandMines : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
     {
+        //check if the player is no longer touching the mine  and  change the sprite to not touch
         if (other.gameObject.tag == "Player")
         { pressed = false;
             if (EC.kill)

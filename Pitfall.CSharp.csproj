@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -89,15 +83,15 @@
     <Compile Include="Assets\Scripts\Enemy\Bomb.cs" />
     <Compile Include="Assets\Scripts\Enemy\EnemyControl.cs" />
     <Compile Include="Assets\Scripts\Enemy\LandMines.cs" />
+    <Compile Include="Assets\Scripts\Enemy\Rope.cs" />
+    <Compile Include="Assets\Scripts\Enemy\Slime.cs" />
     <Compile Include="Assets\Scripts\Game\BackgroundControl.cs" />
     <Compile Include="Assets\Scripts\Game\DestroyObjects.cs" />
     <Compile Include="Assets\Scripts\Game\GameVarControl.cs" />
     <Compile Include="Assets\Scripts\Game\SpawnEnemies.cs" />
     <Compile Include="Assets\Scripts\Game\SpawnObstacles.cs" />
     <Compile Include="Assets\Scripts\Player\CharacterMovement.cs" />
-    <Compile Include="Assets\Scripts\Player\OldPlayerControl.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerControl.cs" />
-    <Compile Include="Assets\Scripts\Player\Rope.cs" />
     <Compile Include="Assets\Scripts\UI\LifesManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />

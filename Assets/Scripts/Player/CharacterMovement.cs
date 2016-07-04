@@ -25,9 +25,12 @@ public class CharacterMovement : MonoBehaviour {
         groundCheck = transform.Find("GroundCheck");
     }
 
+    //this function will control only the movement when the player is in the ground or jumping 
+    //I allow double jump to keep some of the obstacles a bit easier
     public void Move(float front, bool jump = false)
     {
-        anim.SetBool("Climb", false);
+       
+     
         GetComponent<Rigidbody2D>().velocity = new Vector2(speed * front, 0);
        
         if (jump && (grounded || !doubleJump))
@@ -39,13 +42,14 @@ public class CharacterMovement : MonoBehaviour {
             }
             GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce),ForceMode2D.Impulse);
         }
-        anim.SetFloat("Speed", Mathf.Abs(front));
+
         Flip(front);
     }
 
-
+    //check where the player is going and flip in that direction.
     void Flip(float x)
     {
+       
         if (x <= -.01f)
         {
             GetComponent<SpriteRenderer>().flipX = true;
@@ -56,6 +60,7 @@ public class CharacterMovement : MonoBehaviour {
         }
     }
 
+    //this funcion will work only when the player is climbing (stairs)
     public void Climb(float front, float vertical, bool jump = false)
     {
         anim.SetBool("Climb", true);
@@ -66,7 +71,7 @@ public class CharacterMovement : MonoBehaviour {
         }
         else
         {
-            if (front ==0)
+            if (front == 0)
                 { GetComponent<Rigidbody2D>().velocity = new Vector2(speed * front,  jumpForce); }
         }
             
@@ -76,6 +81,7 @@ public class CharacterMovement : MonoBehaviour {
     private void FixedUpdate()
     {
         // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundedRadius, whatIsGround);
         anim.SetBool("Ground", grounded);
         if (grounded)
