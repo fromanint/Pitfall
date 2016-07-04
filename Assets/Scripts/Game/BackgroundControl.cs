@@ -96,7 +96,7 @@ public class BackgroundControl : MonoBehaviour {
                 nextBg.localScale = new Vector3(transform.localScale.x, transform.localScale.y);
             }
 
-            nextBg.GetComponent<BackgroundControl>().mirror = !mirror;
+            //nextBg.GetComponent<BackgroundControl>().mirror = !mirror;
             nextBg.GetComponent<BackgroundControl>().maxScreens = maxScreens;
             GameControl.countBg++;
             return (nextBg.GetComponent<BackgroundControl>());

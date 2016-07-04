@@ -28,6 +28,7 @@ public class SpawnEnemies : MonoBehaviour {
             int enemyIndex = Random.Range(0, Enemies.Length);
             GameObject GO = Instantiate(Enemies[enemyIndex], transform.position, transform.rotation) as GameObject;
             GO.transform.parent = parent.transform;
+        GO.transform.localScale = new Vector3(1, 1, 1);
         
     }
 }

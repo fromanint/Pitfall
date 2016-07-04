@@ -45,7 +45,6 @@ public class LandMines : MonoBehaviour {
 
         }
         else {
-            Debug.Log("hey");
             EC.kill = false;
             if (pressed)
             {
@@ -64,12 +63,14 @@ public class LandMines : MonoBehaviour {
 
     void OnTriggerStay2D(Collider2D other)
     {
+        
         if(other.gameObject.tag == "Player")
         { pressed = true;
             if(EC.kill)
-            {
-                
-                SR.sprite = DangerPress; }
+            { 
+                SR.sprite = DangerPress;
+                other.gameObject.GetComponent<PlayerControl>().ManageLife(EC.damage, EC.kill);
+            }
             else { SR.sprite = Press; }
          
         }

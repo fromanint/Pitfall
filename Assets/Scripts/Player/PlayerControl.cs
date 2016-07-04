@@ -4,169 +4,158 @@ using UnityEngine.SceneManagement;
 
 
 [RequireComponent(typeof(CharacterMovement))]
+
 public class PlayerControl : MonoBehaviour {
-
-    
-
-    [SerializeField]
-    float dieDelay;
-
 
     public float maxHealth;
     public int maxLifes;
-    [HideInInspector]
-    public float health;
-    [HideInInspector]
-    public int lifes;
-    CharacterMovement CM;
+    public float gravity;
 
-    float gravity;
-    bool jump;
-    bool climb;
+    [HideInInspector] public float health;
+    [HideInInspector] public int lifes;
+    [HideInInspector] public bool dead;
+    [HideInInspector] public bool climb;
+    [HideInInspector] public bool isAttach;
+
+
+    [SerializeField]float dieDelay;
+
+    CharacterMovement CM;
+    Animator Anim;
     LifesManager LM;
-	// Use this for initialization
-	void Start () {
-        CM = GetComponent<CharacterMovement>();
-        LM = FindObjectOfType(typeof(LifesManager)) as LifesManager;
-        health = maxHealth;
-        lifes = maxLifes;
-        climb = false;
-        gravity = GetComponent<Rigidbody2D>().gravityScale;
-	}
+    bool jump;
+
+
+    //At start inizialice all the variables in the script
+    void Awake() {
+        health = maxHealth; //actual health is going to be maxhealth
+        lifes = maxLifes; //actual lifes going to be maxLifes
+        dead = false; //At start player won't be dead
+        jump = false; //At start player won't be jumping
+        climb = false; //At start player won't be climbing
+        isAttach = false; //Look if the player is attach to something.
+    }
+
+    // Use this for initialization
+    //initialization variables that depends on other scripts
+    void Start () {
+        CM = GetComponent<CharacterMovement>();  //Controls the movement of the player
+        Anim = GetComponent<Animator>(); //Controls the animation of dead
+        LM = FindObjectOfType(typeof(LifesManager)) as LifesManager; //controls the lifes in the UI.
+        GetComponent<Rigidbody2D>().gravityScale = gravity;
+    }
 	
 	// Update is called once per frame
-	void FixedUpdate () {
-     
-        float x = Input.GetAxis("Horizontal");
-        jump = Input.GetKeyDown("space");
-        if (!climb)
+	void Update () {
+        if (!isAttach)
         {
-            CM.Move(x, jump);
+            float x = Input.GetAxis("Horizontal");
+            jump = Input.GetKeyDown("space");
+            if (!climb)
+            {
+                CM.Move(x, jump);
+            }
+            else
+            {
+                float y = Input.GetAxis("Vertical");
+                if (jump)
+                {
+                    climb = false;
+                    GetComponent<Rigidbody2D>().gravityScale = gravity;
+                }
+                CM.Climb(x, y, jump);
+            }
         }
         else {
-            float y = Input.GetAxis("Vertical");
-            CM.Climb(x, y, jump);
+            Anim.SetBool("Climb", true);
+            if(Input.GetKeyDown("space"))
+            {
+                StartCoroutine("Detach");
+            }
         }
+        
+
     }
+    IEnumerator Detach() {
+        // Detaches the transform from its parent.
+        
+        Transform parent = transform.parent;
+        GetComponent<Rigidbody2D>().gravityScale = gravity;
+        transform.rotation = Quaternion.identity;
+        transform.parent = null;
+        isAttach = false;
+        Anim.SetBool("Climb", false);
 
-    IEnumerator OnTriggerExit2D(Collider2D other) {
-
-        if (other.gameObject.tag == "Rope")
-        {
-            climb = false;
-            GetComponent<Rigidbody2D>().gravityScale = gravity;
-            Debug.Log("norope");
-        }
         yield return new WaitForSeconds(dieDelay);
-
-        Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"),false);
-           
-
-    }
-
-
-
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-
-        if (other.gameObject.tag == "Rope")
-        {
-            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"));
-            Debug.Log("rope");
-            climb = true;
-            GetComponent<Rigidbody2D>().gravityScale = 0;
-            
-        }
-            if (other.gameObject.tag == "Hole")
-        {
-
-
-            EnemyControl ec = other.gameObject.GetComponent<EnemyControl>();
-            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"));
-            if (ec)
-            {
-                ManageLife(ec.damage, ec.kill);
-            }
-            else { Debug.Log(other.gameObject.name + " :missing EnemyControl"); }
-
-
-
-        }
-
-        if (other.gameObject.tag == "Enemy")
-        {
-            
-            EnemyControl ec = other.gameObject.GetComponent<EnemyControl>();
-            if (ec) { 
-                ManageLife(ec.damage,ec.kill); }
-            else { Debug.Log(other.gameObject.name + " :missing EnemyControl"); }
-
-            //Take variable damage depending on the hitted enemy;
-        }
-   
-
+        if (parent)
+        { parent.gameObject.layer = LayerMask.NameToLayer("NoTraspasing"); }
         
     }
 
-
-    IEnumerator Die()
+    public void ManageLife(float damage, bool kill)
     {
-        Camera cam = Camera.main;
-          yield return new WaitForSeconds(dieDelay);
-          if(cam)
-          {
-              Transform StartPos = cam.transform.FindChild("StartPos");
-              if (StartPos)
-              {
-                  transform.position = new Vector3(StartPos.position.x, StartPos.position.y, 0);
-                  LM.UpdateLifes();
-                  LM.UpdateHealth();
-              }
-              else { Debug.Log("startpos not found"); }
-
-          }
-
-          Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"), false);
-    }
-    public void ManageLife(float damage,bool kill)
-    {
-        if(LM)
-        { 
-             if (kill) {
-                  health = 0;
-               }
-        
-            if (health > 0)
-            {
-
-                health -= damage;
-                LM.UpdateHealth();
-            
-            }
-            else {
-              
-                
-               if (lifes > 1)
+        //Verify that player is not dead
+        if (!dead)
+        {
+            if (LM) {
+                if (kill){//Verify that the enemy is a killer of the player if its reset player
+                    StartCoroutine("ResetPlayer");
+                }
+                else
                 {
-                     Debug.Log(lifes);
-                    lifes--;
-                    health = maxHealth;
-                    StartCoroutine("Die");
-
-                }
-                else {
-                    Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"), false);
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                    //Take the damage
+                    //if player still have health update in the UI if not player is dead
+                    health -= damage;
+                    if (health <= 0)
+                    {
+                        StartCoroutine("ResetPlayer");
+                    }
+                    else {
+                        LM.UpdateHealth();
+                    }
                 }
 
             }
+            else{ Debug.Log("No Life Manager UI found"); }
         }
-        else { Debug.Log("No life Manager UI"); }
     }
 
-        
-        
+    //Now player is dead and we have to know if he has another chance (life) or is gameOver(Reload Scene)
+    IEnumerator ResetPlayer() 
+    {
+        StartCoroutine("Detach");
+            dead = true;
+            Anim.SetBool("Dead", true);
+                
+            
+            yield return new WaitForSeconds(dieDelay);
+            //if player's last life reset the scene and the ignored layers
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"), false);
+            lifes--;
+            if (lifes <0)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            else{
+                //if player still have a chance get the start pos in the camera and move the player to it
+                Camera cam = Camera.main;
+            if (cam)
+            {
+                Transform StartPos = cam.transform.FindChild("StartPos");
+                if (StartPos)
+                {
+                    transform.position = new Vector3(StartPos.position.x, StartPos.position.y, 0);
+                    LM.UpdateLifes();
+                    LM.UpdateHealth();
+                    transform.localScale = new Vector3(.7f, .7f, 1);
+                    Anim.SetBool("Dead", false);
+                    dead = false;
+                }
+            }
+            else { Debug.Log("startpos not found"); }
+
+            }
+    }
 
     
 }

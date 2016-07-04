@@ -50,12 +50,12 @@ public class LifesManager : MonoBehaviour {
     //This updates the number of lifes when the player is kill it will be call from player control
     
     public void UpdateLifes() {
-        Debug.Log("UpdateLife");
+
         lifes[Player.maxLifes- Player.lifes-1].gameObject.SetActive(false);
     }
     //This updates the health of player is hitten it will be call from player control
     public void UpdateHealth() {
-        Debug.Log("UpdateHealth");
+
         healthBar.fillAmount = Player.health / Player.maxHealth;
     }
 }
