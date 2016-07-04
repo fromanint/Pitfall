@@ -47,39 +47,43 @@ public class PlayerControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //just move if player not dead
+        if (!dead) { 
         //Check if player is attach to a rope if its attach wait until player hit "space"  to detach 
-        if (!isAttach)
-        {
+            if (!isAttach)
+             {
             
-            float x = Input.GetAxis("Horizontal");
-            jump = Input.GetKeyDown("space");
-            //Check if the player is climbing a stairs if not player can move arround with the keyboard arrows
-            if (!climb)
-            {
-                Anim.SetBool("Climb", false);
-                Anim.SetFloat("Speed", Mathf.Abs(x));
-                CM.Move(x, jump);
-            }
-            else
-            {
-                //if its climbing player will move in vertical 
-                float y = Input.GetAxis("Vertical");
-                if (jump)//if player hits jump he will no be climbing anymore so he can fall.
+                 float x = Input.GetAxis("Horizontal");
+                 jump = Input.GetKeyDown("space");
+                 //Check if the player is climbing a stairs if not player can move arround with the keyboard arrows
+                  if (!climb)
+                  {
+                           Anim.SetBool("Climb", false);
+                       Anim.SetFloat("Speed", Mathf.Abs(x));
+                        CM.Move(x, jump);
+                   }
+                 else
                 {
-                    climb = false;
-                    GetComponent<Rigidbody2D>().gravityScale = gravity;
+                //if its climbing player will move in vertical 
+                      float y = Input.GetAxis("Vertical");
+                       if (jump)//if player hits jump he will no be climbing anymore so he can fall.
+                       {
+                          climb = false;
+                          GetComponent<Rigidbody2D>().gravityScale = gravity;
+                      }
+                      CM.Climb(x, y, jump);
+                  }
+               }
+             else {
+                   Anim.SetBool("Climb", true);
+                   if(Input.GetKeyDown("space"))
+                    {   
+                        StartCoroutine("Detach");
                 }
-                CM.Climb(x, y, jump);
-            }
+             }
+            
         }
-        else {
-            Anim.SetBool("Climb", true);
-            if(Input.GetKeyDown("space"))
-            {
-                StartCoroutine("Detach");
-            }
-        }
-        
+
 
     }
     IEnumerator Detach() {
