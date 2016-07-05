@@ -143,6 +143,7 @@ public class PlayerControl : MonoBehaviour {
             //if player's last life reset the scene and the ignored layers
             Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Ground"), false);
             lifes--;
+            health = maxHealth;
             if (lifes <= 0)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
